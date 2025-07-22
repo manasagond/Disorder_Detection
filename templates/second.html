@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Sense AI - Quick Guide</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: white; /* White background */
+            color: black; /* Black text */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+            position: relative; /* Added to keep the fixed position at the bottom relative to body */
+        }
+
+        .container {
+            z-index: 1;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* White background with slight transparency */
+            border-radius: 15px;
+            width: 80%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            margin-bottom: 80px; /* Ensure content doesn't overlap fixed button */
+        }
+
+        .left-column {
+            width: 30%;
+        }
+
+        .right-column {
+            width: 65%;
+            padding-bottom: 60px; /* Add space at the bottom of the column */
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        .category {
+            margin: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: rgba(240, 240, 240, 1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .category h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+
+        .category-button {
+            background-color: black; /* Black button */
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: white; /* White text */
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .category-button:hover {
+            background-color: #333; /* Slightly darker black on hover */
+        }
+
+        .info-box {
+            background-color: rgba(240, 240, 240, 1); /* Light gray background */
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            margin-top: 10px;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-box h3 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .info-box p {
+            font-size: 16px;
+        }
+
+        .next-button-container {
+            position: fixed; /* Fixes the button container to the bottom of the viewport */
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            border-radius: 10px;
+            background-color: rgba(240, 240, 240, 1); /* Light background for the subbox */
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px; /* Ensures the button doesn't stretch too wide */
+        }
+
+        .next-button {
+            background-color: black; /* Black button */
+            color: white; /* White text */
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .next-button:hover {
+            background-color: #333; /* Slightly darker black on hover */
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-column">
+            <div class="category">
+                <button class="category-button" onclick="showInfo('stress')">Stress</button>
+            </div>
+            <div class="category">
+                <button class="category-button" onclick="showInfo('nostress')">No Stress</button>
+            </div>
+            <div class="category">
+                <button class="category-button" onclick="showInfo('depressed')">Depressed</button>
+            </div>
+            <div class="category">
+                <button class="category-button" onclick="showInfo('notdepressed')">Not Depressed</button>
+            </div>
+            <div class="category">
+                <button class="category-button" onclick="showInfo('anxiety')">Anxiety</button>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <h1 class="title">Quick Guide</h1>
+
+            <div id="stress-info" class="info-box">
+                <h3>Stress</h3>
+                <p><strong>Meaning:</strong> Stress is a state of mental or emotional strain caused by challenging or demanding circumstances.</p>
+                <p><strong>Causes:</strong> Work pressure, family issues, financial concerns, etc.</p>
+                <p><strong>Detection Criteria:</strong> Restlessness, irritability, fatigue, headaches, muscle tension.</p>
+            </div>
+
+            <div id="nostress-info" class="info-box">
+                <h3>No Stress</h3>
+                <p><strong>Meaning:</strong> No stress refers to a calm and relaxed mental state without emotional strain.</p>
+                <p><strong>Causes:</strong> Healthy work-life balance, positive mental habits, supportive relationships.</p>
+                <p><strong>Detection Criteria:</strong> Calm demeanor, steady mood, physical relaxation.</p>
+            </div>
+
+            <div id="depressed-info" class="info-box">
+                <h3>Depressed</h3>
+                <p><strong>Meaning:</strong> Depression is a mood disorder characterized by persistent sadness, loss of interest in activities, and low energy.</p>
+                <p><strong>Causes:</strong> Genetics, trauma, stress, chemical imbalances in the brain.</p>
+                <p><strong>Detection Criteria:</strong> Loss of interest, fatigue, hopelessness, changes in sleep/appetite.</p>
+            </div>
+
+            <div id="notdepressed-info" class="info-box">
+                <h3>Not Depressed</h3>
+                <p><strong>Meaning:</strong> A state where the individual is mentally balanced and not experiencing symptoms of depression.</p>
+                <p><strong>Causes:</strong> Emotional well-being, healthy lifestyle, fulfilling relationships.</p>
+                <p><strong>Detection Criteria:</strong> Positive mood, balanced energy levels, interest in daily activities.</p>
+            </div>
+
+            <div id="anxiety-info" class="info-box">
+                <h3>Anxiety</h3>
+                <p><strong>Meaning:</strong> Anxiety is a mental health condition characterized by excessive worry, fear, or nervousness.</p>
+                <p><strong>Causes:</strong> Stressful situations, genetics, trauma, hormonal imbalances.</p>
+                <strong>Detection Criteria:</strong>
+                <p>Restlessness, racing thoughts, physical symptoms like sweating or increased heart rate.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Navigate Button inside the fixed subbox -->
+    <div class="next-button-container">
+        <a href="/main" class="next-button">Navigate</a>
+    </div>
+
+    <script>
+        // Function to show information
+        function showInfo(state) {
+            document.querySelectorAll('.info-box').forEach(function(box) {
+                box.style.display = 'none';
+            });
+
+            const infoBox = document.getElementById(state + '-info');
+            if (infoBox) {
+                infoBox.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

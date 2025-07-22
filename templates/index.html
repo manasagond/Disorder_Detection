@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Sense AI for Mental Disorder Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px;
+            gap: 20px;
+        }
+
+        .block {
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .block:hover {
+            transform: translateY(-5px);
+        }
+
+        .block h2 {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .block p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .block button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .block button:hover {
+            background-color: #45a049;
+        }
+
+        #voiceStatus {
+            margin-top: 10px;
+        }
+
+        .description {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .disorder-list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .disorder-box {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 150px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #4CAF50;
+        }
+
+        .disorder-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Styled file input */
+        input[type="file"] {
+            display: none; /* Hide the default file input */
+        }
+
+        .file-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .file-button:hover {
+            background-color: #45a049;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        Dual Sense AI for Mental Disorder Detection
+    </header>
+
+    <div class="description">
+        <p><strong>Mental Disorders Overview:</strong></p>
+        <p>This AI system analyzes both facial expressions and speech patterns to detect potential mental disorders. The following are the key disorders it identifies:</p>
+    </div>
+
+    <div class="disorder-list">
+        <div class="disorder-box">Stress</div>
+        <div class="disorder-box">No Stress</div>
+        <div class="disorder-box">Depressed</div>
+        <div class="disorder-box">Not Depressed</div>
+        <div class="disorder-box">Anxiety</div>
+    </div>
+
+    <div class="container">
+        <!-- Face Detection Block -->
+        <div class="block">
+            <h2>Face-Based Detection</h2>
+            <p>Analyze facial expressions to detect potential mental health markers.</p>
+            <button id="run-face">Start Face Detection</button>
+            <p id="faceResult">Detected from Face: Waiting for detection...</p>
+        </div>
+
+        <!-- Voice Recognition Block -->
+        <div class="block">
+            <h2>Speech-Based Analysis</h2>
+            <p>Process speech patterns to assess emotional and mental states.</p>
+            <!-- Styled "Choose File" Button -->
+            <label for="csvFile" class="file-button">Choose CSV File</label>
+            <input type="file" id="csvFile" accept=".csv" onchange="loadCSV(event)">
+            <button onclick="recognizeSpeech()">Start Speech Recognition</button>
+            <p id="voiceStatus">Click "Start Speech Recognition" and speak.</p>
+            <p id="voiceResult">Detected from Voice: Waiting for input...</p>
+        </div>
+
+        <!-- Combined Result Block -->
+        <div class="block">
+            <h2>Combined Result</h2>
+            <p id="combinedResult">Results will appear here once both methods are processed.</p>
+        </div>
+    </div>
+
+    <script>
+        let faceResult = "";
+        let voiceResult = "";
+
+        // Function to check and combine results
+        function checkResults() {
+            const combinedResult = document.getElementById("combinedResult");
+            if (faceResult && voiceResult) {
+                if (faceResult.toLowerCase() === voiceResult.toLowerCase()) {
+                    combinedResult.textContent = "Matched Disorder: " + faceResult;
+                } else {
+                    combinedResult.textContent = "Disorder not matched.";
+                }
+            }
+        }
+
+        // Face Detection Section
+        function fetchFaceLabel() {
+            fetch('/get-label')
+                .then(response => response.json())
+                .then(data => {
+                    faceResult = data.label || "";
+                    document.getElementById("faceResult").textContent = "Detected from Face: " + (faceResult || "Waiting for detection...");
+                    checkResults();
+                })
+                .catch(error => console.error("Error fetching face label:", error));
+        }
+
+        // Polling every 2 seconds for face detection
+        setInterval(fetchFaceLabel, 2000);
+
+        function openFaceDetection() {
+            fetch("/run-face-detection");
+        }
+
+        document.getElementById('run-face').onclick = openFaceDetection;
+
+        // Voice Analysis Section
+        let data;
+
+        function loadCSV(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const text = e.target.result;
+                    data = parseCSV(text);
+                    alert("CSV file loaded successfully!");
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function parseCSV(text) {
+            const lines = text.split("\n");
+            const headers = lines[0].split(",");
+            const result = {};
+
+            headers.forEach(header => {
+                result[header.trim()] = [];
+            });
+
+            lines.slice(1).forEach(line => {
+                const values = line.split(",");
+                headers.forEach((header, index) => {
+                    result[header.trim()].push(values[index]?.trim());
+                });
+            });
+
+            return result;
+        }
+
+        function recognizeSpeech() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+
+            recognition.onstart = function () {
+                document.getElementById("voiceStatus").textContent = "Listening...";
+            };
+
+            recognition.onresult = function (event) {
+                const speechResult = event.results[0][0].transcript;
+                document.getElementById("voiceStatus").textContent = "Recognized: " + speechResult;
+                matchToDisorder(speechResult);
+            };
+
+            recognition.onerror = function () {
+                document.getElementById("voiceStatus").textContent = "Error recognizing speech.";
+            };
+
+            recognition.start();
+        }
+
+        function matchToDisorder(voiceInput) {
+            if (!data) {
+                alert("Please load a CSV file first.");
+                return;
+            }
+
+            const disorders = {
+                'depressed': data['depressed'],
+                'not_depressed': data['not_depressed'],
+                'stress': data['stress'],
+                'nostress': data['nostress'],
+                'anxiety': data['anxiety']
+            };
+
+            const matchedResults = [];
+
+            for (const disorder in disorders) {
+                if (disorders[disorder]) {
+                    disorders[disorder].forEach(keyword => {
+                        if (keyword && voiceInput.toLowerCase().includes(keyword.toLowerCase())) {
+                            matchedResults.push(disorder);
+                        }
+                    });
+                }
+            }
+
+            voiceResult = matchedResults.length > 0 ? matchedResults[0] : "No match";
+            document.getElementById("voiceResult").textContent = "Detected from Voice: " + voiceResult;
+            checkResults();
+        }
+    </script>
+</body>
+</html>
